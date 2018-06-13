@@ -2,12 +2,14 @@ FROM alpine:3.7
 
 ENV JUPYTER       /usr/bin/jupyter 
 ENV JULIA_PKGDIR  /home/jupyter/.julia
+ENV PYTHON        /usr/bin/python3
 
 RUN set -x \
     && apk update \
     && apk --no-cache add \
         bash \
         julia \
+        mbedtls \
         python3 \
 #        py3-zmq \
         py3-tornado \
@@ -16,11 +18,16 @@ RUN set -x \
     && apk --no-cache add --virtual .builddeps \
         build-base \
         cmake \
+        freetype-dev \
         openblas-dev \
         perl \
         python3-dev \
     && pip3 install --upgrade pip \
     && pip3 install jupyter \
+    # matplotlib for PyPlot
+    && ln -s /usr/include/locale.h /usr/include/xlocale.h \
+    && pip3 install numpy==1.13.3 \
+    && pip3 install matplotlib \
     # dir/user
     && mkdir -p \
         /etc/jupyter \
@@ -30,13 +37,22 @@ RUN set -x \
     && addgroup jupyter docker \
     # jupyter julia kernel
     && julia -e 'Pkg.init()' \
+    # MbedTLS workaround
+    && julia -e 'Pkg.clone("MbedTLS")' \
+    && cd $JULIA_PKGDIR/v0.6/MbedTLS \
+    && sed -ri 's/^(const juliaprefix = )(joinpath.+)$/\1Prefix(\2)/' deps/build.jl \
+    && julia $JULIA_PKGDIR/v0.6/MbedTLS/deps/build.jl \
     && julia -e 'Pkg.add("IJulia")' \
-    # ZMQ musl tgz require > 0.6
-    && julia -e 'Pkg.checkout("ZMQ", "master")' \
-    && julia -e 'Pkg.build("ZMQ")' \
     && jupyter kernelspec list \
     && jupyter kernelspec install /root/.local/share/jupyter/kernels/julia-* \
     && julia -e 'using IJulia;' \
+    # PyPlot
+    && julia -e 'Pkg.add("PyPlot"); using PyPlot;' \
+    # CodecZlib.jl: force to search path /lib/libz.so
+    && julia -e 'Pkg.add("CSV");' \
+    && julia $JULIA_PKGDIR/v0.6/CodecZlib/deps/build.jl / \
+    && julia -e 'using CSV' \
+    # 
     && chown -R jupyter:jupyter /home/jupyter \
     # clean
     && find /usr/lib/python3.6 -name __pycache__ | xargs rm -r \
@@ -44,13 +60,6 @@ RUN set -x \
     && apk del .builddeps   
 
 USER jupyter
-
-RUN set -x \
-    # CodecZlib.jl: force to search path /lib/libz.so
-    && julia -e 'Pkg.add("CSV");' \
-    && julia $JULIA_PKGDIR/v0.6/CodecZlib/deps/build.jl / \
-    && julia -e 'using CSV' 
-
 
 WORKDIR /code
 
