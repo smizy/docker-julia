@@ -2,7 +2,7 @@
 
 [![](https://images.microbadger.com/badges/image/smizy/julia.svg)](https://microbadger.com/images/smizy/julia "Get your own image badge on microbadger.com") 
 [![](https://images.microbadger.com/badges/version/smizy/julia.svg)](https://microbadger.com/images/smizy/julia "Get your own version badge on microbadger.com")
-[![CircleCI](https://circleci.com/gh/smizy/docker-julia.svg?style=svg&circle-token=0142f1f1188bf3bd4407cd860c1e8280f7315f60)](https://circleci.com/gh/smizy/docker-julia)
+[![CircleCI](https://circleci.com/gh/smizy/docker-julia.svg?style=svg&circle-token=ae13b45ebbae2eccc10110982678a94ff86d78e7)](https://circleci.com/gh/smizy/docker-julia)
 
 Julia + Jupyter Notebook docker image based on alpine
 
