@@ -1,5 +1,21 @@
 FROM alpine:3.7
 
+ARG BUILD_DATE
+ARG VCS_REF
+ARG VERSION
+
+LABEL \
+    maintainer="smizy" \
+    org.label-schema.build-date=$BUILD_DATE \
+    org.label-schema.docker.dockerfile="/Dockerfile" \
+    org.label-schema.license="Apache License 2.0" \
+    org.label-schema.name="smizy/julia" \
+    org.label-schema.url="https://github.com/smizy" \
+    org.label-schema.vcs-ref=$VCS_REF \
+    org.label-schema.vcs-type="Git" \
+    org.label-schema.version=$VERSION \
+    org.label-schema.vcs-url="https://github.com/smizy/docker-julia"
+
 ENV JUPYTER       /usr/bin/jupyter 
 ENV JULIA_PKGDIR  /home/jupyter/.julia
 ENV PYTHON        /usr/bin/python3

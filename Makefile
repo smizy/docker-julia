@@ -9,7 +9,7 @@ clean:
 .PHONY: runtime
 runtime:
 	docker build \
-		--build-arg BUILD_DATE=${BUILD_DATE} \
+		--build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
 		--build-arg VCS_REF=${VCS_REF} \
 		--build-arg VERSION=${VERSION} \
 		--rm -t smizy/julia:${TAG} .
