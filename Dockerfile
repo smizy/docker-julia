@@ -8,6 +8,7 @@ RUN set -x \
     && apk update \
     && apk --no-cache add \
         bash \
+        freetype \
         julia \
         mbedtls \
         python3 \
@@ -58,6 +59,10 @@ RUN set -x \
     && find /usr/lib/python3.6 -name __pycache__ | xargs rm -r \
     && rm -rf /root/.[acpw]* \
     && apk del .builddeps   
+
+RUN set -x \
+    # PyPlot: Error loading shared library /usr/lib/libpython3.6m.so
+    && ln -s /usr/lib/libpython3.6m.so.1.0 /usr/lib/libpython3.6m.so
 
 USER jupyter
 
